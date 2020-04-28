@@ -59,7 +59,8 @@ class DNAStrand:
         return DNAStrand(complement)
     
 
-    def Move(self, other, shift=0):
+    def Move(self, other, shift=0, i=1):
+        i=1 if i else 0
         str_fita1=self.strand
         str_fita2=other.strand
         if shift>-1:
@@ -77,8 +78,9 @@ class DNAStrand:
             str_fita1d+=x
             str_fita2d+=y
         str_fita2d+=str_fita2[k+1:].lower()
-        print(str_fita1d)
-        print(str_fita2d)
+        if i:
+            print(str_fita1d)
+            print(str_fita2d)
         str_fita1d=str_fita1d.replace("-", "")
         str_fita2d=str_fita2d.replace("-", "")
         return str_fita1d, str_fita2d
@@ -94,12 +96,13 @@ class DNAStrand:
      # @return a copy of this strand, where matched characters are upper case 
      #         and unmatched, lower case.
      
-    def MoveToLeft(self, other, shift):
+    def MoveToLeft(self, other, shift, i=1):
         nova=other.strand[shift:]
         if len(nova)<self.len:
             nova+='-'*self.len
-        print(self)
-        print(nova)
+        if i:
+            print(self)
+            print(nova)
 
         return self.Compare(nova)
     
@@ -111,10 +114,9 @@ class DNAStrand:
      # @param shift number of positions to shift other to the left.
      # @return the Compare of a copy of this strand, where matched characters are upper case 
      #         and unmatched, lower case.
-    def MoveToRight(self, other, shift):
+    def MoveToRight(self, other, shift, i=1):
         nova='-'*shift+other.strand
-        print(nova)
-        print(nova)
+        if i: print(nova)
         if len(nova)<self.len:
             nova+='-'*self.len
         return self.Compare(nova)
@@ -148,16 +150,16 @@ class DNAStrand:
      # @param other given DNAStrand to be matched with this one.
      # @return maximum number of matching pairs.
      #
-    def findMaxPossibleMatches(self, other):
+    def findMaxPossibleMatches(self, other, i):
         COUNT=[0, 0]
         COUNTpai=[COUNT, 0]
         for k in range(1, len(other)):
-            x=self.MoveToLeft(other, k)
+            x=self.MoveToLeft(other, k, i)
             if x[0]>COUNT[0]:
                 COUNT=x
                 COUNTpai=[COUNT, -k]
         for k in range(0, len(self)+1):
-            x=self.MoveToRight(other, k)
+            x=self.MoveToRight(other, k, i)
             if x[0]>COUNT[0]:
                 COUNT=x
                 COUNTpai=[COUNT, k]
@@ -236,11 +238,11 @@ def main (args=None):
     except ValueError:
         print("Ao menos uma fita não e válida")
 
-def findMaxAux(fita1, fita2):
+def findMaxAux(fita1, fita2, i=1):
     if type(fita1)!=DNAStrand: fita1=DNAStrand(fita1)
     if type(fita2)!=DNAStrand: fita2=DNAStrand(fita2)
-    foo=fita1.findMaxPossibleMatches(fita2)
-    bar=fita2.findMaxPossibleMatches(fita1)
+    foo=fita1.findMaxPossibleMatches(fita2, i)
+    bar=fita2.findMaxPossibleMatches(fita1, i)
     fita1D=dict()
     fita1D["MAX"]=(foo[0][0])
     fita1D["RES"]=foo[0][1] if foo[0][1]!=0 else fita1.strand.lower()

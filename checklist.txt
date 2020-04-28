@@ -1,0 +1,54 @@
+*Botões:
+** OK
+** Shuffle
+** CC
+** MC
+** cls
+** << Left
+** R
+** Right
+** UP
+** Down
+** Help
+** credits
+** v
+
+*Comandos de teclado:
+**ç
+**v
+**i
+**r
+**return
+**escape
+**delete
+**m
+**left
+**shift
+**h
+**down
+**up
+
+* Janelas auxiliares
+** Help
+*** Todas as funções estão descritas
+**Créditos
+
+* Entradas
+** entrada1
+*** entrada1 com fita
+*** entrada1 com inteiro
+**entrada 2
+*** entrada2 com fita
+*** entrada2 com inteiro
+**Arquivo
+** Entradas inválidas
+
+* Saída
+** Ajuste de fita
+*** Fitas sempre centralizadas
+*** Reset automático
+** lb_total
+
+
+Material complementar:
+https://unicode-table.com/pt/sets/arrow-symbols/
