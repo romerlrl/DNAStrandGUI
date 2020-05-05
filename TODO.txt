@@ -1,0 +1,1 @@
+#Ultrapassar as bordas se ainda estiverem alinhadas.
