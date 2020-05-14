@@ -16,9 +16,20 @@ def bt_click_shuffle():
     lista=reset()
 
 def bt_click_move(i=1):
-    lista[0]+=(fonte[2]*i)
-    lista[1]=lista[1]+(1*i)
-    lb_fita_2.place(x=lista[0])
+    #lista[0]+=(25*i)
+    #lista[0]+=(fonte[2]*i)
+    lista[1]+=i
+    lista[0]=0.5+(lista[1]*25/janela.winfo_x())
+    #lb_fita_2.place(x=lista[0])
+    lb_fita_2.place(relx=lista[0])
+    log=[
+            'int((janela.winfo_width()+lista[0])*0.5)', int((janela.winfo_width()+lista[0])*0.5),
+            'lb_fita_1.winfo_x', lb_fita_1.winfo_x(),
+            'lb_fita_2.winfo_x', lb_fita_2.winfo_x(),
+            'janela.winfo_x()', janela.winfo_x(),
+            'janela.winfo_x()//2', janela.winfo_x()//2,
+            'janela.winfo_width', janela.winfo_width()]
+    for lg in range(0, len(log), 2): print(log[lg], log[lg+1])
     if conteudos[0]:
         Recebe_Label_1, Recebe_Label_2 =DNAStrand(conteudos[0]).Move(DNAStrand(conteudos[1]), lista[1], telas["Verbo"])
         lb_fita_1["text"] = Recebe_Label_1
@@ -32,6 +43,7 @@ def bt_click_move(i=1):
     borda=janela.winfo_width()
     posFinal=lb_fita_2.winfo_width()+lista[0]
     if (lista[0]>borda) or posFinal<0:
+        print('r')
         reset()
     printv(lista)
     return lista
@@ -39,7 +51,7 @@ def bt_click_move(i=1):
 #Função que movimenta a label 2 no eixo vertical.
 def bt_UPDOWN(i=0.05):
     lista[2]+=i
-    lb_fita_2.place(x=lista[0], rely=lista[2])
+    lb_fita_2.place(rely=lista[2])
     printv(lista)
     if not(0<lista[2]<1):
         reset()
@@ -139,10 +151,10 @@ def verborragico():
     return telas
     
 def reset():
-    lista[0]=120
+    lista[0]=0.5
     lista[1]=0
     lista[2]=0.58
-    lb_fita_2.place(x=lista[0], rely=lista[2])
+    lb_fita_2.place(relx=lista[0], rely=lista[2])
     bt_click_move(0)
     return lista
 
@@ -209,13 +221,16 @@ bt_shuffle.place(x=50, y=70)
 
 #Texto
 conteudos=["AGTCCA", "TTC"] #Fitas padrão do programa
-lista=[120, 0, 0.58]        #posX, armazena deslocamento, posY
+lista=[0, 0, 0.58]        #posX, armazena deslocamento, posY
 fonte=["Fixedsys", 5, 25]   #tipo de fonte, tamanho e ?
 ##Exibe as duas fitas
 lb_fita_1=Label(janela, font=(fonte[0], fonte[1]**2), text=conteudos[0])
 lb_fita_2=Label(janela, font=(fonte[0], fonte[1]**2), text=conteudos[1])
-lb_fita_1.place(x=120, rely=0.42)
-lb_fita_2.place(x=lista[0], rely=lista[2])
+#lb_fita_1.place(x=120, rely=0.42)
+lb_fita_1.place(relx=0.5, rely=0.42)
+#lb_fita_2.place(x=lista[0], rely=lista[2])
+#lb_fita_2.place(relx=0.5, rely=lista[2])
+lb_fita_2.place(x=200, rely=lista[2])
 
 ##Exibe a quantidade de pares de uma dada combinação
 lb_total=Label(janela, font=('Verdana', fonte[1]**2), text='',)
@@ -242,4 +257,5 @@ janela.bind_all('<Key>', key)
 # width x height + left + top
 janela.geometry("400x400+200+200")
 janela.mainloop()
+
 
