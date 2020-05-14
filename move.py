@@ -1,15 +1,13 @@
-'''
-Da aula 5 até a ?
-'''
+import time
+ini=time.time()
+import sys
 from tkinter import *
 from functools import partial
 from DNAStrand import *
 import random
-
 def bt_click_shuffle():
-    from random import shuffle
     foo=list(conteudos[1])
-    shuffle(foo)
+    random.shuffle(foo)
     foo=str().join(foo)
     lb_fita_2["text"] = foo
     conteudos[1]=foo
@@ -53,11 +51,14 @@ def bt_clickOk():
     conteudos[1]=ed2.get().upper()
     for k in range(2):
         if conteudos[k].isdigit():
-            printv("Gerada aleatoriamente")
-            conteudos[k]=str().join([random.choice("GATC") for k in range(abs(int(conteudos[k])+1))])
+            cria_strand_por_tamanho(k)
     bt_click_move(0)
     reset()
 
+def cria_strand_por_tamanho(fita):
+    printv("Gerada aleatoriamente")
+    conteudos[fita]=str().join([random.choice("GATC") for fita in range(abs(int(conteudos[fita])))])
+    
 #Exibe o complemento da segunda fita.
 def bt_complement():
     printv(telas["Complemento"])
@@ -89,7 +90,7 @@ def bt_max_possibilities():
 def bt_janelas_auxiliares(h=0):
     h=1 if h else 0
     novaJanela=Tk()
-    textoCreditos=textos[h].replace('¬', '\n -->').replace('{{', 'o botão ').replace('[[', 'a tecla ').replace('}', '').replace(']', '')
+    textoCreditos=textos[h]
     lb_credits=Label(novaJanela, font=("Arial", 12), justify='left', text=textoCreditos)
     lb_credits.pack(fill='both')
     novaJanela.mainloop()
@@ -102,6 +103,28 @@ def key(event):
         dicioEventos[x]()
     except:
         pass
+
+def argumentos_do_prompt(prompt):
+    for w in range(0, len(prompt)):
+        x=prompt[w]
+        if x in ['-n', '-m']:
+            index=0
+            if x =='-m': index=1
+            conteudos[index]=int(prompt[w+1])
+            cria_strand_por_tamanho(index)
+        elif '--dna' in x:
+            aux=int(x[7:])
+            index=int(x[5])-1
+            conteudos[index]=aux
+            cria_strand_por_tamanho(index)
+        elif x =='-v':
+            dicioEventos['v']()
+        elif '-h' in x:
+            for linha in textos:
+                print(linha)
+        else:
+            pass
+
 
 def ContaCasais():
     string=lb_fita_2["text"]
@@ -146,16 +169,17 @@ def reset():
     bt_click_move(0)
     return lista
 
-#Aula 5
+
 arquivo=open('textos auxiliares.txt', 'r', encoding='utf-8')
 textos=arquivo.readlines()
+textos=[k.replace('¬', '\n -->').replace('{{', 'o botão ').replace('[[', 'a tecla ').replace('}', '').replace(']', '') for k in textos]
 arquivo.close()
 
 janela = Tk()
-telas={"Complemento":False, "Verbo":True}
+
+telas={"Complemento":False, "Verbo":False}
 dicioEventos={
             #tudo em minúscula para ser lido com o caps lock ativo
-            
               'u':bt_janelas_auxiliares,  #u de about Us
               'v':verborragico,           #v de verborragico
               'i':bt_complement,          #i de inverso
@@ -175,8 +199,9 @@ dicioEventos={
               'down':partial(bt_UPDOWN),
               'up':partial(bt_UPDOWN, -0.05),
               }
-
-
+conteudos=["AGTCCA", "TTC"] #Fitas padrão do programa
+if len(sys.argv):
+    argumentos_do_prompt(sys.argv)
 #Botões
 ##Botões de movimento
 bt_left=Button(janela, width=2, text=(chr(0x2b05)), command=dicioEventos['left'])
@@ -208,8 +233,8 @@ bt_shuffle=Button(janela, width=7, text="SHUFFLE", command=bt_click_shuffle)
 bt_shuffle.place(x=50, y=70)
 
 #Texto
-conteudos=["AGTCCA", "TTC"] #Fitas padrão do programa
 lista=[120, 0, 0.58]        #posX, armazena deslocamento, posY
+
 fonte=["Fixedsys", 5, 25]   #tipo de fonte, tamanho e ?
 ##Exibe as duas fitas
 lb_fita_1=Label(janela, font=(fonte[0], fonte[1]**2), text=conteudos[0])
@@ -237,9 +262,12 @@ bt_help=Button(janela, background='red', text="help", command=dicioEventos['h'])
 #bt_help.place(relx=0.95, rely=0.05)
 bt_help.pack(side='bottom', fill='x')
 
+    
 janela.bind_all('<Key>', key)
-
+ini=time.time()-ini
+print(ini)
 # width x height + left + top
+
 janela.geometry("400x400+200+200")
 janela.mainloop()
 
