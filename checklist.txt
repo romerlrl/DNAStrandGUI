@@ -14,7 +14,6 @@
 ** v
 
 *Comandos de teclado:
-**ç
 **v
 **i
 **r
@@ -49,6 +48,14 @@
 *** Reset automático
 ** lb_total
 
+
+*Início via prompt
+** --n x
+** --m x
+**-dna1=x
+**-dna2=x
+**-v
+**-h
 
 Material complementar:
 https://unicode-table.com/pt/sets/arrow-symbols/

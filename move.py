@@ -1,5 +1,3 @@
-import time
-ini=time.time()
 import sys
 from tkinter import *
 from functools import partial
@@ -13,10 +11,19 @@ def bt_click_shuffle():
     conteudos[1]=foo
     lista=reset()
 
-def bt_click_move(i=1):
-    lista[0]+=(fonte[2]*i)
-    lista[1]=lista[1]+(1*i)
-    lb_fita_2.place(x=lista[0])
+#parâmetro um inteiro
+#retorna o relx equivalente a 5px
+def posRelativa():
+    tamanho_de_i=25/janela.winfo_width()
+    lista[0]=(tamanho_de_i*lista[1])+0.5
+    return lista
+    
+def bt_click_move(i=1, ParaRecursiva=True):
+    #tem que de alguma forma retornar 5*1
+    lista[1]+=i
+    #lista[1]=lista[1]+(1*i)
+    posRelativa()
+    lb_fita_2.place(relx=lista[0])
     if conteudos[0]:
         Recebe_Label_1, Recebe_Label_2 =DNAStrand(conteudos[0]).Move(DNAStrand(conteudos[1]), lista[1], telas["Verbo"])
         lb_fita_1["text"] = Recebe_Label_1
@@ -28,10 +35,7 @@ def bt_click_move(i=1):
     printv(f"Matches: {lb_total['text']}")
     #Reseta se passar das bordas
     borda=janela.winfo_width()
-    posFinal=lb_fita_2.winfo_width()+lista[0]
-    if (lista[0]>borda) or posFinal<0:
-        reset()
-    printv(lista)
+    if reset_de_colisão() and ParaRecursiva: reset()
     return lista
 
 #Função que movimenta a label 2 no eixo vertical.
@@ -120,11 +124,9 @@ def argumentos_do_prompt(prompt):
         elif x =='-v':
             dicioEventos['v']()
         elif '-h' in x:
-            for linha in textos:
-                print(linha)
+            print(textos[2])
         else:
             pass
-
 
 def ContaCasais():
     string=lb_fita_2["text"]
@@ -134,9 +136,11 @@ def ContaCasais():
     #printv(f"Total de pares:{soma}")
     return soma
 
-def printv(string1):
+def printv(*args):
     if telas['Verbo']:
-        print(string1)
+        for k in args:
+            print(k, end=' ')
+        print('\n')
     pass
         
 def findMaxAuxy(fita1, fita2):
@@ -162,17 +166,43 @@ def verborragico():
     return telas
     
 def reset():
-    lista[0]=120
+    lista[0]=0.5
     lista[1]=0
     lista[2]=0.58
     lb_fita_2.place(x=lista[0], rely=lista[2])
-    bt_click_move(0)
+    bt_click_move(0, False)
     return lista
 
+def reset_de_colisão():
+    #Colisão com a borda esquerda
+    #print(lb_fita_2.winfo_geometry())
+    if lb_fita_2.winfo_x()+lb_fita_2.winfo_width()<0:
+        printv("Colisão Esquerda")
+        return True
+    #Colisão com a borda direita
+    ## No caso da lb_fita1 ser menor ou igual ao tamanho da janela.
+    fita_1_geometry=lb_fita_1.winfo_geometry().replace('x', '+').split('+')
+    fita_2_geometry=lb_fita_2.winfo_geometry().replace('x', '+').split('+')
+    #print('fitageos', fita_1_geometry, fita_2_geometry)
+    fim_da_fita_1=int(fita_1_geometry[0])+int(fita_1_geometry[2])
+    inicio_da_fita_2=int(fita_2_geometry[2])
+    printv('fim', fim_da_fita_1, 'tamanho', janela.winfo_width())
+    
+    if fim_da_fita_1<=janela.winfo_width():
+        printv(int(float(lb_fita_2.place_info()['relx'])))
+        if int(float(lb_fita_2.place_info()['relx'])):
+            printv("pequena colisão direita")
+            return True
+    ##No caso da lb_fita1 extrapolar a janela
+    else:
+        if inicio_da_fita_2>fim_da_fita_1:
+            printv("grande conlisão direita")
+            return True
+    return False
 
 arquivo=open('textos auxiliares.txt', 'r', encoding='utf-8')
 textos=arquivo.readlines()
-textos=[k.replace('¬', '\n -->').replace('{{', 'o botão ').replace('[[', 'a tecla ').replace('}', '').replace(']', '') for k in textos]
+textos=[k.replace('¬', '\n -->').replace('{{', 'o botão ').replace('[[', 'a tecla ').replace('}', '').replace(']', '').replace('#', '\n') for k in textos]
 arquivo.close()
 
 janela = Tk()
@@ -185,9 +215,10 @@ dicioEventos={
               'i':bt_complement,          #i de inverso
               'r':reset,                  #r de reset
               'return':bt_clickOk,        #Enter
-              'escape':janela.destroy,           #esc
-              'delete':partial(print, '\n'*42),
+              'escape':janela.destroy,    #esc
               's':bt_click_shuffle,       #s de shuffle
+              'delete':partial(print, '\n'*42),
+
                                           #Del para limpar o terminal
 
               #Comandos do professor
@@ -200,6 +231,7 @@ dicioEventos={
               'up':partial(bt_UPDOWN, -0.05),
               }
 conteudos=["AGTCCA", "TTC"] #Fitas padrão do programa
+
 if len(sys.argv):
     argumentos_do_prompt(sys.argv)
 #Botões
@@ -237,13 +269,13 @@ lista=[120, 0, 0.58]        #posX, armazena deslocamento, posY
 
 fonte=["Fixedsys", 5, 25]   #tipo de fonte, tamanho e ?
 ##Exibe as duas fitas
-lb_fita_1=Label(janela, font=(fonte[0], fonte[1]**2), text=conteudos[0])
-lb_fita_2=Label(janela, font=(fonte[0], fonte[1]**2), text=conteudos[1])
-lb_fita_1.place(x=120, rely=0.42)
-lb_fita_2.place(x=lista[0], rely=lista[2])
+lb_fita_1=Label(janela, font=('Fixedsys', 25), text=conteudos[0])
+lb_fita_2=Label(janela, font=('Fixedsys', 25), text=conteudos[1])
+lb_fita_1.place(relx=0.5, rely=0.42)
+lb_fita_2.place(relx=0.5, rely=lista[2])
 
 ##Exibe a quantidade de pares de uma dada combinação
-lb_total=Label(janela, font=('Verdana', fonte[1]**2), text='',)
+lb_total=Label(janela, font=('Verdana', 25), text='',)
 lb_total.place(x=210, y=20)
 
 
@@ -264,8 +296,6 @@ bt_help.pack(side='bottom', fill='x')
 
     
 janela.bind_all('<Key>', key)
-ini=time.time()-ini
-print(ini)
 # width x height + left + top
 
 janela.geometry("400x400+200+200")
