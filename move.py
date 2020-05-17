@@ -19,7 +19,7 @@ def posRelativa():
     return lista
     
 def bt_click_move(i=1, ParaRecursiva=True):
-    #tem que de alguma forma retornar 5*1
+    #tem que de alguma forma retornar 5*i
     lista[1]+=i
     #lista[1]=lista[1]+(1*i)
     posRelativa()
@@ -80,14 +80,15 @@ def bt_complement():
     return (telas)
 
 #Usando o DNAStrand.py encontra o maior número de pares possíveis.
+
 def bt_max_possibilities():
     reset()
     foo=DNAStrand(conteudos[0])
     bar=DNAStrand(conteudos[1])
-    dicioPossibilidades=findMaxAuxy(foo, bar)
-    bt_click_move(dicioPossibilidades["MOV"])
-    lb_fita_1["text"] = dicioPossibilidades["fita1"]
-    lb_fita_2["text"] = dicioPossibilidades["fita2"]
+    bestScenario=findMaxAux(foo, bar, telas['Verbo'])
+    bt_click_move(bestScenario)
+    #lb_fita_1["text"] = dicioPossibilidades["fita1"]
+    #lb_fita_2["text"] = dicioPossibilidades["fita2"]
     printv(dicioPossibilidades)
 
 #Abre a janela de ajuda/créditos.
@@ -136,29 +137,10 @@ def ContaCasais():
     #printv(f"Total de pares:{soma}")
     return soma
 
-def printv(*args):
+def printv(string):
     if telas['Verbo']:
-        for k in args:
-            print(k, end=' ')
-        print('\n')
+        print(string)
     pass
-        
-def findMaxAuxy(fita1, fita2):
-    if type(fita1)!=DNAStrand: fita1=DNAStrand(fita1)
-    if type(fita2)!=DNAStrand: fita2=DNAStrand(fita2)
-    foo=fita1.findMaxPossibleMatches(fita2, telas["Verbo"])
-    bar=fita2.findMaxPossibleMatches(fita1, telas["Verbo"])
-    #MOV=foo[1]
-    fita1D=dict()
-    #fita1D["MAX"]=(foo[0][0])
-    fita1D["RES"]=foo[0][1] if foo[0][1] else fita1.strand.lower()
-    fita1D["MOV"]=(foo[1])
-    fita2D=dict()
-    #fita2D["MAX"]=(bar[0][0])
-    fita2D["RES"]=(bar[0][1] if bar[0][1] else fita2.strand.lower())
-    #fita2D["MOV"]=(bar[1])
-    retorno={"MOV":fita1D["MOV"], "fita1":fita1D["RES"], "fita2":fita2D["RES"]}
-    return retorno
 
 def verborragico():
     print(f"Método verboso alterado")
@@ -185,11 +167,8 @@ def reset_de_colisão():
     fita_2_geometry=lb_fita_2.winfo_geometry().replace('x', '+').split('+')
     #print('fitageos', fita_1_geometry, fita_2_geometry)
     fim_da_fita_1=int(fita_1_geometry[0])+int(fita_1_geometry[2])
-    inicio_da_fita_2=int(fita_2_geometry[2])
-    printv('fim', fim_da_fita_1, 'tamanho', janela.winfo_width())
-    
+    inicio_da_fita_2=int(fita_2_geometry[2])    
     if fim_da_fita_1<=janela.winfo_width():
-        printv(int(float(lb_fita_2.place_info()['relx'])))
         if int(float(lb_fita_2.place_info()['relx'])):
             printv("pequena colisão direita")
             return True
@@ -200,6 +179,10 @@ def reset_de_colisão():
             return True
     return False
 
+def ShuffleBest():
+    bt_click_shuffle()
+    bt_max_possibilities()
+    
 arquivo=open('textos auxiliares.txt', 'r', encoding='utf-8')
 textos=arquivo.readlines()
 textos=[k.replace('¬', '\n -->').replace('{{', 'o botão ').replace('[[', 'a tecla ').replace('}', '').replace(']', '').replace('#', '\n') for k in textos]
@@ -217,8 +200,8 @@ dicioEventos={
               'return':bt_clickOk,        #Enter
               'escape':janela.destroy,    #esc
               's':bt_click_shuffle,       #s de shuffle
+              'f': ShuffleBest,           #
               'delete':partial(print, '\n'*42),
-
                                           #Del para limpar o terminal
 
               #Comandos do professor
@@ -230,7 +213,7 @@ dicioEventos={
               'down':partial(bt_UPDOWN),
               'up':partial(bt_UPDOWN, -0.05),
               }
-conteudos=["AGTCCA", "TTC"] #Fitas padrão do programa
+conteudos=["ATCTG", "CACA"] #Fitas padrão do programa
 
 if len(sys.argv):
     argumentos_do_prompt(sys.argv)

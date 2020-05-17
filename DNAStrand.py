@@ -95,7 +95,7 @@ class DNAStrand:
      # @param shift number of positions to shift other to the left.
      # @return a copy of this strand, where matched characters are upper case 
      #         and unmatched, lower case.
-     
+    
     def MoveToLeft(self, other, shift, i=1):
         nova=other.strand[shift:]
         if len(nova)<self.len:
@@ -103,7 +103,6 @@ class DNAStrand:
         if i:
             print(self)
             print(nova)
-
         return self.Compare(nova)
     
     ##
@@ -238,11 +237,16 @@ def main (args=None):
     except ValueError:
         print("Ao menos uma fita não e válida")
 
-def findMaxAux(fita1, fita2, i=1):
+def findMaxAux(fita1, fita2, i=0):
     if type(fita1)!=DNAStrand: fita1=DNAStrand(fita1)
     if type(fita2)!=DNAStrand: fita2=DNAStrand(fita2)
-    foo=fita1.findMaxPossibleMatches(fita2, i)
-    bar=fita2.findMaxPossibleMatches(fita1, i)
+    #foo=fita1.findMaxPossibleMatches(fita2, i)
+    bar=fita1.findMaxPossibleMatches(fita2, i)
+    if i: print('f',bar[1])
+    #print()
+    return bar[1]
+'''
+def qq():
     fita1D=dict()
     fita1D["MAX"]=(foo[0][0])
     fita1D["RES"]=foo[0][1] if foo[0][1]!=0 else fita1.strand.lower()
@@ -259,7 +263,7 @@ def findMaxAux(fita1, fita2, i=1):
         fita2D["RES"]=espacamento+fita2D["RES"]
     retorno={"MOV":fita1D["MAX"], "fita1":fita1D["RES"], "fita2":fita2D["RES"]}
     return retorno
-
+'''
 foo="GATA"
 foo_r="CTAT"
 aux1=DNAStrand("GATA")
